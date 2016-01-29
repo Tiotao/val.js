@@ -1,43 +1,8 @@
 ;(function($){
     $.fn.extend({
         validator: function(options) {
-            // var PLAN_AMOUNT_REGEX = /^[0-9]{0,4}$/;
-            // var PHONE_REGEX = /^[0-9]{6,15}$/;
             var self = this;
-            
-            // function invalidHandler($entry, validClass, invalidClass, errorMsgClass, errorMsg){
-            //     var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
-            //     $entry.addClass(invalidClass).removeClass(validClass);
-            //     $entry.after(messageView)
-            // }
-            
-            // function validHandler($entry, validClass, invalidClass, errorMsgClass){
-            //     $entry.addClass(validClass).removeClass(invalidClass);
-            //     $entry.next('.'+errorMsgClass).remove();
-            // }
-            
-            // this.defaultOptions = {
-            //     button: '#submit',
-            //     entries: [{
-            //         id: "#name",
-            //         regex: PLAN_AMOUNT_REGEX,
-            //         placeholder: "none",
-            //         errorMessage: "name error"
-            //     },
-            //     {
-            //         id: "#password",
-            //         regex: PHONE_REGEX,
-            //         placeholder: "none",
-            //         errorMessage: "password error"
-            //     }
-            //     ],
-            //     validHandler: validHandler,
-            //     invalidHandler: invalidHandler,
-            //     validClass: 'valid',
-            //     invalidClass: 'invalid',
-            //     errorMsgClass: 'errorMsg'
-            // };
-            
+            this.defaultOptions = {};
             var settings = $.extend({}, this.defaultOptions, options);
             
             this.validity = {
@@ -47,16 +12,10 @@
             
             this.touched = [];
             
-            // this.defaultOptions = {
-                
-            // };
-            
             this.IELowerThan = function(ver) {
                 var myNav = navigator.userAgent.toLowerCase();
                 var version = (myNav.indexOf('msie') != -1) ? parseInt(myNav.split('msie')[1]) : false;
                 if ( version ) {
-                    // console.log('version' + version)
-                    // console.log('smaller' + ver)
                     return version < ver
                 } else {
                     return false;
@@ -98,7 +57,6 @@
             
             this.validate = function(wrapper, currIndex) {
                 
-                // unique function
                 function unique(array) {
                     return $.grep(array, function(el, index) {
                         return index === $.inArray(el, array);
@@ -132,8 +90,6 @@
                             updateValidityView($entry, settings.validClass, settings.invalidClass, settings.errorMsgClass, message);
                         }
                         
-                        // //method(wrapper, message);
-                        // console.log(message);
                     }
                 })
             }
@@ -165,21 +121,15 @@
                             })(results),
                             detail: results,
                         }
-                        // trigger based on validity
                         self.showMessage(wrapper, self.validity, null);
                         self.updateSubmitButton(wrapper, self.validity.value);
-                        // console.log(self.validity);
-                        // console.log(self);
                     });
                 });
             }
             
-            
-            
             return this.each(function() {
                 var $this = $(this);
                 self.watch($this);
-                //this.watch($this);
             });
         }
     });
