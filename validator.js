@@ -6,7 +6,7 @@
             var self = this;
             
             this.defaultOptions = {
-                button: '#submit-btn',
+                button: '#submit',
                 entries: [{
                     id: "#name",
                     regex: PLAN_AMOUNT_REGEX,
@@ -28,6 +28,9 @@
                 value: false,
                 detail: {},
             };
+            
+            this.touched = [];
+            
             
             // this.defaultOptions = {
                 
@@ -70,28 +73,57 @@
                 }
             }
             
-            this.validate = function(wrapper) {
+            this.validate = function(wrapper, currIndex) {
+                
+                // unique function
+                function unique(array) {
+                    return $.grep(array, function(el, index) {
+                        return index === $.inArray(el, array);
+                    });
+                }
+                
                 var results = [];
                 $.each(settings.entries, function(index, entry) {
                     var entryObj = wrapper.find(entry.id);
                     var entryVal = entryObj.val();
                     var result = self.checkRegex(entry, entryVal);
+                    if(index === currIndex){
+                        self.touched.push(index);
+                        self.touched = unique(self.touched);
+                    }
                     results.push(result);
                 });
                 return results;
             }
             
+            this.showMessage = function(wrapper, validity, method) {
+                $.each(validity.detail, function(index, status){
+                    if(!status.isValid && $.inArray(index, self.touched) > -1){
+                        var message = status.msg;
+                        //method(wrapper, message);
+                        console.log(message);
+                    }
+                })
+            }
             
+            this.updateSubmitButton = function(wrapper, isValid) {
+                var button = wrapper.find(settings.button);
+                console.log(isValid);
+                if (isValid) {
+                    button.removeAttr("disabled");
+                } else {
+                    button.attr("disabled", true);
+                }
+            }
 
             this.watch = function(wrapper) {
                 var validate = self.validate;
-                var validity = self.validity;
-                
+
                 $.each(settings.entries, function(index, entry) {
                     var entryObj = wrapper.find(entry.id);
                     entryObj.on('input', function(){
-                        var results = validate(wrapper);
-                        validity = {
+                        var results = validate(wrapper, index);
+                        self.validity = {
                             value: (function(r){
                                 var invalidEntries = $.grep(r, 
                                     function(n ,i) {
@@ -102,7 +134,10 @@
                             detail: results,
                         }
                         // trigger based on validity
-                        console.log(validity);
+                        self.showMessage(wrapper, self.validity, null);
+                        self.updateSubmitButton(wrapper, self.validity.value);
+                        // console.log(self.validity);
+                        // console.log(self);
                     });
                 });
             }
