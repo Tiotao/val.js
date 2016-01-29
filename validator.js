@@ -1,17 +1,21 @@
 ;(function($){
     $.fn.extend({
         validator: function(options) {
+            var PLAN_AMOUNT_REGEX = /^[0-9]{0,4}$/;
+            var PHONE_REGEX = /^[0-9]{6,15}$/;
+            var self = this;
+            
             this.defaultOptions = {
                 button: '#submit-btn',
                 entries: [{
                     id: "#name",
-                    regex: "regex",
+                    regex: PLAN_AMOUNT_REGEX,
                     placeholder: "none",
                     errorMessage: "name error"
                 },
                 {
                     id: "#password",
-                    regex: "regex2",
+                    regex: PHONE_REGEX,
                     placeholder: "none",
                     errorMessage: "password error"
                 }
@@ -20,7 +24,10 @@
             
             var settings = $.extend({}, this.defaultOptions, options);
             
-            this.validity = false;
+            this.validity = {
+                value: false,
+                detail: {},
+            };
             
             // this.defaultOptions = {
                 
@@ -50,11 +57,11 @@
                 } else if (!regex.test(content)) {
                     isValid = false;
                     isEmpty = false;
-                    msg = null;
+                    msg = errorMsg;
                 } else {
                     isValid = true;
                     isEmpty = false;
-                    msg = errorMsg;
+                    msg = null;
                 }
                 return {
                     isValid: isValid,
@@ -68,19 +75,21 @@
                 $.each(settings.entries, function(index, entry) {
                     var entryObj = wrapper.find(entry.id);
                     var entryVal = entryObj.val();
-                    var result = this.checkRegex(entry, entryVal);
+                    var result = self.checkRegex(entry, entryVal);
                     results.push(result);
                 });
                 return results;
             }
+            
+            
 
             this.watch = function(wrapper) {
-                var validate = this.validate;
-                var validity = this.validity;
+                var validate = self.validate;
+                var validity = self.validity;
                 
                 $.each(settings.entries, function(index, entry) {
                     var entryObj = wrapper.find(entry.id);
-                    entryObj.on('change', function(){
+                    entryObj.on('input', function(){
                         var results = validate(wrapper);
                         validity = {
                             value: (function(r){
@@ -92,13 +101,18 @@
                             })(results),
                             detail: results,
                         }
+                        // trigger based on validity
+                        console.log(validity);
                     });
                 });
             }
             
+            
+            
             return this.each(function() {
                 var $this = $(this);
-                this.watch($this);
+                self.watch($this);
+                //this.watch($this);
             });
         }
     });
