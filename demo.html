@@ -2,15 +2,63 @@
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
         <script src="validator.js"></script>
+        <style>
+            .invalid {
+                border: 1px solid red;
+            }
+            
+            .valid {
+                border: 1px solid forestgreen
+            }
+            
+            p.errorMsg {
+                display: inline;
+                font-size: 0.8em;
+            }
+        </style>
     </head>
     <body>
         <form class="testForm">
-            <input id="name"></input>
-            <input id="password"></input>
+            <input id="name"></input><br/>
+            <input id="password"></input><br/>
             <button id="submit" disabled>Submit</button>
         </form>
         <script>
-            $(".testForm").validator({});
+            var PLAN_AMOUNT_REGEX = /^[0-9]{0,4}$/;
+            var PHONE_REGEX = /^[0-9]{6,15}$/;
+            
+            function invalidHandler($entry, validClass, invalidClass, errorMsgClass, errorMsg){
+                var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
+                $entry.addClass(invalidClass).removeClass(validClass);
+                $entry.after(messageView)
+            }
+            
+            function validHandler($entry, validClass, invalidClass, errorMsgClass){
+                $entry.addClass(validClass).removeClass(invalidClass);
+                $entry.next('.'+errorMsgClass).remove();
+            }
+            
+            $(".testForm").validator({
+                button: '#submit',
+                entries: [{
+                    id: "#name",
+                    regex: PLAN_AMOUNT_REGEX,
+                    placeholder: "none",
+                    errorMessage: "name error"
+                },
+                {
+                    id: "#password",
+                    regex: PHONE_REGEX,
+                    placeholder: "none",
+                    errorMessage: "password error"
+                }
+                ],
+                validHandler: validHandler,
+                invalidHandler: invalidHandler,
+                validClass: 'valid',
+                invalidClass: 'invalid',
+                errorMsgClass: 'errorMsg'
+            });
         </script>
     </body>
 </html>

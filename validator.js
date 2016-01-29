@@ -1,26 +1,42 @@
 ;(function($){
     $.fn.extend({
         validator: function(options) {
-            var PLAN_AMOUNT_REGEX = /^[0-9]{0,4}$/;
-            var PHONE_REGEX = /^[0-9]{6,15}$/;
+            // var PLAN_AMOUNT_REGEX = /^[0-9]{0,4}$/;
+            // var PHONE_REGEX = /^[0-9]{6,15}$/;
             var self = this;
             
-            this.defaultOptions = {
-                button: '#submit',
-                entries: [{
-                    id: "#name",
-                    regex: PLAN_AMOUNT_REGEX,
-                    placeholder: "none",
-                    errorMessage: "name error"
-                },
-                {
-                    id: "#password",
-                    regex: PHONE_REGEX,
-                    placeholder: "none",
-                    errorMessage: "password error"
-                }
-                ]
-            };
+            // function invalidHandler($entry, validClass, invalidClass, errorMsgClass, errorMsg){
+            //     var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
+            //     $entry.addClass(invalidClass).removeClass(validClass);
+            //     $entry.after(messageView)
+            // }
+            
+            // function validHandler($entry, validClass, invalidClass, errorMsgClass){
+            //     $entry.addClass(validClass).removeClass(invalidClass);
+            //     $entry.next('.'+errorMsgClass).remove();
+            // }
+            
+            // this.defaultOptions = {
+            //     button: '#submit',
+            //     entries: [{
+            //         id: "#name",
+            //         regex: PLAN_AMOUNT_REGEX,
+            //         placeholder: "none",
+            //         errorMessage: "name error"
+            //     },
+            //     {
+            //         id: "#password",
+            //         regex: PHONE_REGEX,
+            //         placeholder: "none",
+            //         errorMessage: "password error"
+            //     }
+            //     ],
+            //     validHandler: validHandler,
+            //     invalidHandler: invalidHandler,
+            //     validClass: 'valid',
+            //     invalidClass: 'invalid',
+            //     errorMsgClass: 'errorMsg'
+            // };
             
             var settings = $.extend({}, this.defaultOptions, options);
             
@@ -30,7 +46,6 @@
             };
             
             this.touched = [];
-            
             
             // this.defaultOptions = {
                 
@@ -73,6 +88,14 @@
                 }
             }
             
+            this.getViewHandler = function(isValid) {
+                if(isValid) {
+                    return settings.validHandler;
+                } else {
+                    return settings.invalidHandler;
+                }
+            }
+            
             this.validate = function(wrapper, currIndex) {
                 
                 // unique function
@@ -84,8 +107,8 @@
                 
                 var results = [];
                 $.each(settings.entries, function(index, entry) {
-                    var entryObj = wrapper.find(entry.id);
-                    var entryVal = entryObj.val();
+                    var $entry = wrapper.find(entry.id);
+                    var entryVal = $entry.val();
                     var result = self.checkRegex(entry, entryVal);
                     if(index === currIndex){
                         self.touched.push(index);
@@ -96,23 +119,32 @@
                 return results;
             }
             
-            this.showMessage = function(wrapper, validity, method) {
+            this.showMessage = function(wrapper, validity) {
                 $.each(validity.detail, function(index, status){
-                    if(!status.isValid && $.inArray(index, self.touched) > -1){
+                    if($.inArray(index, self.touched) > -1){
                         var message = status.msg;
-                        //method(wrapper, message);
-                        console.log(message);
+                        var updateValidityView = self.getViewHandler(status.isValid);
+                        var entryId = settings.entries[index].id;
+                        var $entry = wrapper.find(entryId);
+                        var isValidityChange = ($entry.hasClass(settings.validClass) && !status.isValid) || ($entry.hasClass(settings.invalidClass) && status.isValid) || (!$entry.hasClass(settings.invalidClass) && !$entry.hasClass(settings.validClass));
+                        if (isValidityChange) {
+                            console.log("change")
+                            updateValidityView($entry, settings.validClass, settings.invalidClass, settings.errorMsgClass, message);
+                        }
+                        
+                        // //method(wrapper, message);
+                        // console.log(message);
                     }
                 })
             }
             
             this.updateSubmitButton = function(wrapper, isValid) {
-                var button = wrapper.find(settings.button);
+                var $button = wrapper.find(settings.button);
                 console.log(isValid);
                 if (isValid) {
-                    button.removeAttr("disabled");
+                    $button.removeAttr("disabled");
                 } else {
-                    button.attr("disabled", true);
+                    $button.attr("disabled", true);
                 }
             }
 
@@ -120,8 +152,8 @@
                 var validate = self.validate;
 
                 $.each(settings.entries, function(index, entry) {
-                    var entryObj = wrapper.find(entry.id);
-                    entryObj.on('input', function(){
+                    var $entry = wrapper.find(entry.id);
+                    $entry.on('input', function(){
                         var results = validate(wrapper, index);
                         self.validity = {
                             value: (function(r){
