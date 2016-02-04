@@ -57,7 +57,10 @@
                 invalidHandler: invalidHandler,
                 validClass: 'valid',
                 invalidClass: 'invalid',
-                errorMsgClass: 'errorMsg'
+                errorMsgClass: 'errorMsg',
+                additionalRules: function(){
+                    return true;
+                }
             });
         </script>
     </body>

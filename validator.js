@@ -12,6 +12,7 @@
                 errorMsg: true,
                 validHandler: null,
                 invalidHandler: null,
+                additionalRules: null,
             };
             
             var settings = $.extend({}, this.defaultOptions, options);
@@ -171,7 +172,14 @@
             
             this.updateSubmitButton = function(wrapper, isValid) {
                 var $button = wrapper.find(settings.button);
-                if (isValid) {
+                var rules;
+                console.log($.type(settings.additionalRules));
+                if ($.isFunction(settings.additionalRules)) {
+                    rules = settings.additionalRules();
+                } else {
+                    rules = true;
+                }
+                if (isValid && rules) {
                     $button.removeAttr("disabled");
                 } else {
                     $button.attr("disabled", true);
