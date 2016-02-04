@@ -1,4 +1,4 @@
-Validator.js
+val.js
 =============
 Simple and customizable jQuery form validation plugin.
 
