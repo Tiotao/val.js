@@ -25,11 +25,11 @@
                     settings.validHandler = function($entry, validClass, invalidClass, errorMsgClass){
                         $entry.addClass(validClass).removeClass(invalidClass);
                         $entry.next('.'+errorMsgClass).remove();
-                    }
+                    };
                 } else {
                     settings.validHandler = function($entry, validClass, invalidClass){
                         $entry.addClass(validClass).removeClass(invalidClass);
-                    }
+                    };
                 }
             }
 
@@ -42,12 +42,12 @@
                     settings.invalidHandler = function($entry, validClass, invalidClass, errorMsgClass, errorMsg){
                         var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
                         $entry.addClass(invalidClass).removeClass(validClass);
-                        $entry.after(messageView)
-                    }
+                        $entry.after(messageView);
+                    };
                 } else {
                     settings.invalidHandler = function($entry, validClass, invalidClass){
                         $entry.addClass(invalidClass).removeClass(validClass);
-                    }
+                    };
                 }
             }
             
@@ -62,11 +62,11 @@
                 var myNav = navigator.userAgent.toLowerCase();
                 var version = (myNav.indexOf('msie') != -1) ? parseInt(myNav.split('msie')[1]) : false;
                 if ( version ) {
-                    return version < ver
+                    return version < ver;
                 } else {
                     return false;
                 }
-            }
+            };
             
             this.generateRegex = function(type) {
                 var regex;
@@ -74,7 +74,7 @@
                     regex = type;
                 } else if(type.indexOf('number') > -1){                                     // has number range
                     regex = new RegExp("^[0-9]" + type.split("number")[1] + "$");
-                    console.log(regex)
+                    console.log(regex);
                 } else {                                                                    // default regex
                    switch(type){
                         case 'text':
@@ -95,7 +95,7 @@
                 }
                 
                 return regex;
-            }
+            };
             
             this.checkRegex = function(entry, content) {
                 var isValid, isEmpty, msg;
@@ -103,7 +103,7 @@
                 var regex = self.generateRegex(entry.regex);
                 var errorMsg = entry.errorMessage;
                 var passRegexTest = regex.test(content);
-                if (content.length == 0 || (this.IELowerThan(10) && content === placeholder)) {
+                if (content.length === 0 || (this.IELowerThan(10) && content === placeholder)) {
                     isValid = false;
                     isEmpty = true;
                     msg = errorMsg;
@@ -120,8 +120,8 @@
                     isValid: isValid,
                     isEmpty: isEmpty,
                     msg: msg
-                }
-            }
+                };
+            };
             
             this.getViewHandler = function(isValid) {
                 if(isValid) {
@@ -129,7 +129,7 @@
                 } else {
                     return settings.invalidHandler;
                 }
-            }
+            };
             
             this.validate = function(wrapper, currIndex) {
                 
@@ -151,7 +151,7 @@
                     results.push(result);
                 });
                 return results;
-            }
+            };
             
             this.showMessage = function(wrapper, validity) {
                 $.each(validity.detail, function(index, status){
@@ -166,8 +166,8 @@
                         }
                         
                     }
-                })
-            }
+                });
+            };
             
             this.updateSubmitButton = function(wrapper, isValid) {
                 var $button = wrapper.find(settings.button);
@@ -176,7 +176,7 @@
                 } else {
                     $button.attr("disabled", true);
                 }
-            }
+            };
 
             this.watch = function(wrapper) {
                 var validate = self.validate;
@@ -189,18 +189,18 @@
                             value: (function(r){
                                 var invalidEntries = $.grep(r, 
                                     function(n ,i) {
-                                        return n.isValid == false
+                                        return n.isValid === false;
                                     });
-                                return invalidEntries.length == 0
+                                return invalidEntries.length === 0;
                             })(results),
                             detail: results,
-                        }
+                        };
                         self.showMessage(wrapper, self.validity, null);
                         self.updateSubmitButton(wrapper, self.validity.value);
-                        console.log(self.validity)
+                        console.log(self.validity);
                     });
                 });
-            }
+            };
             
             return this.each(function() {
                 var $this = $(this);
