@@ -1,9 +1,55 @@
 ;(function($){
     $.fn.extend({
+
         validator: function(options) {
             var self = this;
-            this.defaultOptions = {};
+            
+            // default options
+            this.defaultOptions = {
+                validClass: 'valid',
+                invalidClass: 'invalid',
+                errorMsgClass: 'errorMsg',
+                errorMsg: true,
+                validHandler: null,
+                invalidHandler: null,
+            };
+            
             var settings = $.extend({}, this.defaultOptions, options);
+            
+            // define valid handler
+
+            if($.isFunction(settings.validHandler)){                 // handler overridden
+                // do nothing
+            } else if ($.type(settings.validHandler) === "null") {   // use default handler
+                if (settings.errorMsg) {
+                    settings.validHandler = function($entry, validClass, invalidClass, errorMsgClass){
+                        $entry.addClass(validClass).removeClass(invalidClass);
+                        $entry.next('.'+errorMsgClass).remove();
+                    }
+                } else {
+                    settings.validHandler = function($entry, validClass, invalidClass){
+                        $entry.addClass(validClass).removeClass(invalidClass);
+                    }
+                }
+            }
+
+            // define invalid handler
+
+            if($.isFunction(settings.invalidHandler)){                 // handler overridden
+                // do nothing
+            } else if ($.type(settings.invalidHandler) === "null") {   // use default handler
+                if (settings.errorMsg) {
+                    settings.invalidHandler = function($entry, validClass, invalidClass, errorMsgClass, errorMsg){
+                        var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
+                        $entry.addClass(invalidClass).removeClass(validClass);
+                        $entry.after(messageView)
+                    }
+                } else {
+                    settings.invalidHandler = function($entry, validClass, invalidClass){
+                        $entry.addClass(invalidClass).removeClass(validClass);
+                    }
+                }
+            }
             
             this.validity = {
                 value: false,
@@ -27,11 +73,12 @@
                 var placeholder = entry.placeholder;
                 var regex = entry.regex;
                 var errorMsg = entry.errorMessage;
+                var passRegexTest = regex.test(content);
                 if (content.length == 0 || (this.IELowerThan(10) && content === placeholder)) {
                     isValid = false;
                     isEmpty = true;
                     msg = errorMsg;
-                } else if (!regex.test(content)) {
+                } else if (!passRegexTest) {
                     isValid = false;
                     isEmpty = false;
                     msg = errorMsg;
@@ -86,7 +133,6 @@
                         var $entry = wrapper.find(entryId);
                         var isValidityChange = ($entry.hasClass(settings.validClass) && !status.isValid) || ($entry.hasClass(settings.invalidClass) && status.isValid) || (!$entry.hasClass(settings.invalidClass) && !$entry.hasClass(settings.validClass));
                         if (isValidityChange) {
-                            console.log("change")
                             updateValidityView($entry, settings.validClass, settings.invalidClass, settings.errorMsgClass, message);
                         }
                         
@@ -96,7 +142,6 @@
             
             this.updateSubmitButton = function(wrapper, isValid) {
                 var $button = wrapper.find(settings.button);
-                console.log(isValid);
                 if (isValid) {
                     $button.removeAttr("disabled");
                 } else {
@@ -123,6 +168,7 @@
                         }
                         self.showMessage(wrapper, self.validity, null);
                         self.updateSubmitButton(wrapper, self.validity.value);
+                        console.log(self.validity)
                     });
                 });
             }
