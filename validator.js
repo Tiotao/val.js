@@ -68,10 +68,39 @@
                 }
             }
             
+            this.generateRegex = function(type) {
+                var regex;
+                if($.type(type) === 'regexp') {                                             // customized regex
+                    regex = type;
+                } else if(type.indexOf('number') > -1){                                     // has number range
+                    regex = new RegExp("^[0-9]" + type.split("number")[1] + "$");
+                    console.log(regex)
+                } else {                                                                    // default regex
+                   switch(type){
+                        case 'text':
+                            regex = /[A-Za-z]/;
+                            break;
+                        case 'email':
+                            regex =  /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                            break;
+                        case 'phone':
+                            regex =  /^[0-9]{6,15}$/;
+                            break;
+                        case 'country code':
+                            regex = /^[0-9]{1,3}$/;
+                            break;
+                        default:
+                            regex = /.*/;
+                    }
+                }
+                
+                return regex;
+            }
+            
             this.checkRegex = function(entry, content) {
                 var isValid, isEmpty, msg;
                 var placeholder = entry.placeholder;
-                var regex = entry.regex;
+                var regex = self.generateRegex(entry.regex);
                 var errorMsg = entry.errorMessage;
                 var passRegexTest = regex.test(content);
                 if (content.length == 0 || (this.IELowerThan(10) && content === placeholder)) {
