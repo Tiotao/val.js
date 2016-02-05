@@ -101,7 +101,7 @@
             this.checkRegex = function(entry, content) {
                 var isValid, isEmpty, msg;
                 var placeholder = entry.placeholder;
-                var regex = self.generateRegex(entry.regex);
+                var regex = self.generateRegex(entry.constraint);
                 var errorMsg = entry.errorMessage;
                 var passRegexTest = regex.test(content);
                 if (content.length === 0 || (this.IELowerThan(10) && content === placeholder)) {
@@ -142,7 +142,7 @@
                 
                 var results = [];
                 $.each(settings.entries, function(index, entry) {
-                    var $entry = wrapper.find(entry.id);
+                    var $entry = wrapper.find(entry.selector);
                     var entryVal = $entry.val();
                     var result = self.checkRegex(entry, entryVal);
                     if(index === currIndex){
@@ -159,7 +159,7 @@
                     if($.inArray(index, self.touched) > -1){
                         var message = status.msg;
                         var updateValidityView = self.getViewHandler(status.isValid);
-                        var entryId = settings.entries[index].id;
+                        var entryId = settings.entries[index].selector;
                         var $entry = wrapper.find(entryId);
                         var isValidityChange = ($entry.hasClass(settings.validClass) && !status.isValid) || ($entry.hasClass(settings.invalidClass) && status.isValid) || (!$entry.hasClass(settings.invalidClass) && !$entry.hasClass(settings.validClass));
                         if (isValidityChange) {
@@ -190,7 +190,7 @@
                 var validate = self.validate;
 
                 $.each(settings.entries, function(index, entry) {
-                    var $entry = wrapper.find(entry.id);
+                    var $entry = wrapper.find(entry.selector);
                     $entry.on('input', function(){
                         var results = validate(wrapper, index);
                         self.validity = {

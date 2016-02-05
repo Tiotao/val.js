@@ -41,14 +41,14 @@
             $(".testForm").validator({
                 button: '#submit',
                 entries: [{
-                    id: "#name",
-                    regex: PLAN_AMOUNT_REGEX,
+                    selector: "#name",
+                    constraint: PLAN_AMOUNT_REGEX,
                     placeholder: "none",
                     errorMessage: "name error"
                 },
                 {
-                    id: "#password",
-                    regex: PHONE_REGEX,
+                    selector: "#password",
+                    constraint: PHONE_REGEX,
                     placeholder: "none",
                     errorMessage: "password error"
                 }
