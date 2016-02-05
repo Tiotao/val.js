@@ -52,9 +52,21 @@
                     placeholder: "none",
                     errorMessage: [
                         {
+                            msg: 'invalid input',
+                            condition: function(value){
+                                return true;
+                            }
+                        },
+                        {
+                            msg: 'this field is required',
+                            condition: function(value){
+                                return value.length === 0;
+                            }
+                        },
+                        {
                            msg: 'password must be longer than 6 characters',
                            condition: function(value){
-                               return value.length < 6;
+                               return value.length < 6 && value.length > 0;
                            } 
                         },
                         {
