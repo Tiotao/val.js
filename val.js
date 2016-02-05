@@ -75,7 +75,6 @@
                     regex = type;
                 } else if(type.indexOf('number') > -1){                                     // has number range
                     regex = new RegExp("^[0-9]" + type.split("number")[1] + "$");
-                    console.log(regex);
                 } else {                                                                    // default regex
                    switch(type){
                         case 'text':
@@ -173,7 +172,6 @@
             this.updateSubmitButton = function(wrapper, isValid) {
                 var $button = wrapper.find(settings.button);
                 var rules;
-                console.log($.type(settings.additionalRules));
                 if ($.isFunction(settings.additionalRules)) {
                     rules = settings.additionalRules();
                 } else {
@@ -205,7 +203,6 @@
                         };
                         self.showMessage(wrapper, self.validity, null);
                         self.updateSubmitButton(wrapper, self.validity.value);
-                        console.log(self.validity);
                     });
                 });
             };
