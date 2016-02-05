@@ -50,7 +50,14 @@
                     selector: "#password",
                     constraint: PHONE_REGEX,
                     placeholder: "none",
-                    errorMessage: "password error"
+                    errorMessage: [
+                        {
+                           msg: 'password must be longer than 6 characters',
+                           condition: function(value){
+                               return value.length < 6;
+                           } 
+                        }
+                    ]
                 }
                 ],
                 validHandler: validHandler,

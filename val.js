@@ -97,11 +97,27 @@
                 return regex;
             };
             
+            this.getErrorMessage = function(errorMsg, value){
+                var message;
+                if($.type(errorMsg) === "string") {
+                    message = errorMsg;
+                } else {
+                    message = "";
+                    $.each(errorMsg, function(index, msgObject){
+                        var condition = msgObject.condition;
+                        if (condition(value)){
+                            message = msgObject.msg;
+                        }
+                    });
+                }
+                return message;
+            };
+            
             this.checkRegex = function(entry, content) {
                 var isValid, isEmpty, msg;
                 var placeholder = entry.placeholder;
                 var regex = self.generateRegex(entry.constraint);
-                var errorMsg = entry.errorMessage;
+                var errorMsg = self.getErrorMessage(entry.errorMessage, content);
                 var passRegexTest = regex.test(content);
                 if (content.length === 0 || (this.IELowerThan(10) && content === placeholder)) {
                     isValid = false;
