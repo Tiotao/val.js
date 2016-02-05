@@ -27,16 +27,16 @@
             var PLAN_AMOUNT_REGEX = /^[0-9]{0,4}$/;
             var PHONE_REGEX = /^[0-9]{6,15}$/;
             
-            function invalidHandler($entry, validClass, invalidClass, errorMsgClass, errorMsg){
-                var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
-                $entry.addClass(invalidClass).removeClass(validClass);
-                $entry.after(messageView)
-            }
+            // function invalidHandler($entry, validClass, invalidClass, errorMsgClass, errorMsg){
+            //     var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
+            //     $entry.addClass(invalidClass).removeClass(validClass);
+            //     $entry.after(messageView)
+            // }
             
-            function validHandler($entry, validClass, invalidClass, errorMsgClass){
-                $entry.addClass(validClass).removeClass(invalidClass);
-                $entry.next('.'+errorMsgClass).remove();
-            }
+            // function validHandler($entry, validClass, invalidClass, errorMsgClass){
+            //     $entry.addClass(validClass).removeClass(invalidClass);
+            //     $entry.next('.'+errorMsgClass).remove();
+            // }
             
             $(".testForm").validator({
                 button: '#submit',
@@ -56,12 +56,16 @@
                            condition: function(value){
                                return value.length < 6;
                            } 
+                        },
+                        {
+                           msg: 'password must be shorter than 15 characters',
+                           condition: function(value){
+                               return value.length > 15;
+                           } 
                         }
                     ]
                 }
                 ],
-                validHandler: validHandler,
-                invalidHandler: invalidHandler,
                 validClass: 'valid',
                 invalidClass: 'invalid',
                 errorMsgClass: 'errorMsg',

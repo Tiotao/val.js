@@ -43,7 +43,13 @@
                     settings.invalidHandler = function($entry, validClass, invalidClass, errorMsgClass, errorMsg){
                         var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
                         $entry.addClass(invalidClass).removeClass(validClass);
-                        $entry.after(messageView);
+                        console.log($entry.next('.'+errorMsgClass));
+                        if($entry.next('.'+errorMsgClass).length > 0){
+                            $entry.next('.'+errorMsgClass).text(errorMsg);
+                        } else {
+                            $entry.after(messageView);
+                        }
+                       
                     };
                 } else {
                     settings.invalidHandler = function($entry, validClass, invalidClass){
@@ -109,6 +115,7 @@
                             message = msgObject.msg;
                         }
                     });
+                    console.log(message);
                 }
                 return message;
             };
@@ -176,8 +183,10 @@
                         var updateValidityView = self.getViewHandler(status.isValid);
                         var entryId = settings.entries[index].selector;
                         var $entry = wrapper.find(entryId);
+                        var isMessageSame = ($entry.next('.'+settings.errorMsgClass).length < 1 && $.type(message) === "null") || ($entry.next('.'+settings.errorMsgClass).text() === message);
                         var isValidityChange = ($entry.hasClass(settings.validClass) && !status.isValid) || ($entry.hasClass(settings.invalidClass) && status.isValid) || (!$entry.hasClass(settings.invalidClass) && !$entry.hasClass(settings.validClass));
-                        if (isValidityChange) {
+                        console.log([isMessageSame, isValidityChange]);
+                        if (isValidityChange || !isMessageSame) {
                             updateValidityView($entry, settings.validClass, settings.invalidClass, settings.errorMsgClass, message);
                         }
                         
