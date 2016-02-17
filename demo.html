@@ -11,13 +11,13 @@
                 border: 1px solid forestgreen
             }
             
-            p.errorMsg {
+            .errorMsg {
                 display: inline;
                 font-size: 0.8em;
                 padding-right: 10px;
             }
             
-            p.hint {
+            .hint {
                 display: inline;
                 font-weight: bold;
                 font-size: 0.8em;
@@ -80,6 +80,7 @@
                 invalidClass: 'invalid',
                 errorMsgClass: 'errorMsg',
                 hintClass: 'hint',
+                checkEvent: 'input',
                 additionalRules: function(){
                     return true;
                 }

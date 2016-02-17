@@ -15,6 +15,7 @@
                 invalidHandler: null,
                 additionalRules: null,
                 hintHandler: null,
+                checkEvent: 'input'
             };
             
             var settings = $.extend({}, this.defaultOptions, options);
@@ -43,7 +44,7 @@
             } else if ($.type(settings.invalidHandler) === "null") {   // use default handler
                 if (settings.errorMsg) {
                     settings.invalidHandler = function($entry, validClass, invalidClass, errorMsgClass, errorMsg){
-                        var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
+                        var messageView = "<div class='"+ errorMsgClass +"'>" + errorMsg + "</div>";
                         $entry.addClass(invalidClass).removeClass(validClass);
                         if($entry.next('.'+errorMsgClass).length > 0){
                             $entry.next('.'+errorMsgClass).text(errorMsg);
@@ -63,10 +64,9 @@
                 // do nothing
             } else if ($.type(settings.hintHandler) === "null") {
                 if (settings.hint) {
-                    console.log('define hinthandler');
                     settings.hintHandler = function($entry, hintClass, errorMsgClass, hint, visible){
                         if (visible) {
-                            var hintView = "<p class='"+ hintClass +"'>" + hint + "</p>";
+                            var hintView = "<div class='"+ hintClass +"'>" + hint + "</div>";
                             if ($entry.next('.'+errorMsgClass).length < 1) {
                                 $entry.after(hintView);
                             } else {
@@ -243,7 +243,9 @@
                 };
             };
             
-            this.updateSubmitButton = function(wrapper, isValid) {
+            this.updateSubmitButton = function() {
+                var wrapper = self.wrapper;
+                var isValid = self.validity.value;
                 var $button = wrapper.find(settings.button);
                 var rules;
                 if ($.isFunction(settings.additionalRules)) {
@@ -272,20 +274,19 @@
                 //     })(results),
                 //     detail: results,
                 // };
-                
+                self.wrapper = wrapper;
                 self.updateValidity(wrapper, -1);
-                console.log(self.validity);
                 // bind event with each entry
                 $.each(settings.entries, function(index, entry) {
                     var $entry = wrapper.find(entry.selector);
-                    $entry.on('input', function(){
+                    $entry.on(settings.checkEvent, function(){
                         self.updateValidity(wrapper, index);
                         self.showMessage(wrapper, self.validity, null);
-                        self.updateSubmitButton(wrapper, self.validity.value);
+                        self.updateSubmitButton();
+                        console.log(self.validity);
                     });
                     if (entry.hasOwnProperty('hint')) {
                         $entry.on('focus', function(){
-                            console.log(entry.hint);
                             var isValid = self.validity.detail[index].isValid;
                             if (!isValid) {
                                 settings.hintHandler($entry, settings.hintClass, settings.errorMsgClass, entry.hint, true);
