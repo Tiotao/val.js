@@ -14,6 +14,14 @@
             p.errorMsg {
                 display: inline;
                 font-size: 0.8em;
+                padding-right: 10px;
+            }
+            
+            p.hint {
+                display: inline;
+                font-weight: bold;
+                font-size: 0.8em;
+                color: dimgrey;
             }
         </style>
     </head>
@@ -27,24 +35,14 @@
             var PLAN_AMOUNT_REGEX = /^[0-9]{0,4}$/;
             var PHONE_REGEX = /^[0-9]{6,15}$/;
             
-            // function invalidHandler($entry, validClass, invalidClass, errorMsgClass, errorMsg){
-            //     var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
-            //     $entry.addClass(invalidClass).removeClass(validClass);
-            //     $entry.after(messageView)
-            // }
-            
-            // function validHandler($entry, validClass, invalidClass, errorMsgClass){
-            //     $entry.addClass(validClass).removeClass(invalidClass);
-            //     $entry.next('.'+errorMsgClass).remove();
-            // }
-            
             $(".testForm").validator({
                 button: '#submit',
                 entries: [{
                     selector: "#name",
                     constraint: PLAN_AMOUNT_REGEX,
                     placeholder: "none",
-                    errorMessage: "name error"
+                    errorMessage: "name error",
+                    hint: "name must be big"
                 },
                 {
                     selector: "#password",
@@ -81,6 +79,7 @@
                 validClass: 'valid',
                 invalidClass: 'invalid',
                 errorMsgClass: 'errorMsg',
+                hintClass: 'hint',
                 additionalRules: function(){
                     return true;
                 }

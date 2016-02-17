@@ -10,9 +10,11 @@
                 invalidClass: 'invalid',
                 errorMsgClass: 'errorMsg',
                 errorMsg: true,
+                hint: true,
                 validHandler: null,
                 invalidHandler: null,
                 additionalRules: null,
+                hintHandler: null,
             };
             
             var settings = $.extend({}, this.defaultOptions, options);
@@ -43,7 +45,6 @@
                     settings.invalidHandler = function($entry, validClass, invalidClass, errorMsgClass, errorMsg){
                         var messageView = "<p class='"+ errorMsgClass +"'>" + errorMsg + "</p>";
                         $entry.addClass(invalidClass).removeClass(validClass);
-                        console.log($entry.next('.'+errorMsgClass));
                         if($entry.next('.'+errorMsgClass).length > 0){
                             $entry.next('.'+errorMsgClass).text(errorMsg);
                         } else {
@@ -54,6 +55,26 @@
                 } else {
                     settings.invalidHandler = function($entry, validClass, invalidClass){
                         $entry.addClass(invalidClass).removeClass(validClass);
+                    };
+                }
+            }
+            
+            if($.isFunction(settings.hintHandler)){
+                // do nothing
+            } else if ($.type(settings.hintHandler) === "null") {
+                if (settings.hint) {
+                    console.log('define hinthandler');
+                    settings.hintHandler = function($entry, hintClass, errorMsgClass, hint, visible){
+                        if (visible) {
+                            var hintView = "<p class='"+ hintClass +"'>" + hint + "</p>";
+                            if ($entry.next('.'+errorMsgClass).length < 1) {
+                                $entry.after(hintView);
+                            } else {
+                                $entry.next('.'+errorMsgClass).after(hintView);
+                            }
+                        } else {
+                            $entry.nextAll('.'+hintClass).remove();
+                        }
                     };
                 }
             }
@@ -115,7 +136,6 @@
                             message = msgObject.msg;
                         }
                     });
-                    console.log(message);
                 }
                 return message;
             };
@@ -155,13 +175,11 @@
             };
             
             this.validate = function(wrapper, currIndex) {
-                
                 function unique(array) {
                     return $.grep(array, function(el, index) {
                         return index === $.inArray(el, array);
                     });
                 }
-                
                 var results = [];
                 $.each(settings.entries, function(index, entry) {
                     var $entry = wrapper.find(entry.selector);
@@ -185,13 +203,44 @@
                         var $entry = wrapper.find(entryId);
                         var isMessageSame = ($entry.next('.'+settings.errorMsgClass).length < 1 && $.type(message) === "null") || ($entry.next('.'+settings.errorMsgClass).text() === message);
                         var isValidityChange = ($entry.hasClass(settings.validClass) && !status.isValid) || ($entry.hasClass(settings.invalidClass) && status.isValid) || (!$entry.hasClass(settings.invalidClass) && !$entry.hasClass(settings.validClass));
-                        console.log([isMessageSame, isValidityChange]);
                         if (isValidityChange || !isMessageSame) {
                             updateValidityView($entry, settings.validClass, settings.invalidClass, settings.errorMsgClass, message);
                         }
                         
                     }
                 });
+            };
+            
+            // this.showHint = function($entry, hint) {
+            //     var hintClass = settings.hintClass;
+            //     var errorMsgClass = settings.errorMsgClass;
+            //     var hintView = "<p class='"+ hintClass +"'>" + hint + "</p>";
+            //     if ($entry.next('.'+errorMsgClass).length < 1) {
+            //         $entry.after(hintView);
+            //     } else {
+            //         $entry.next('.'+errorMsgClass).after(hintView);
+            //     }
+                
+            // };
+            
+            // this.hideHint = function($entry) {
+            //     var hintClass = settings.hintClass;
+            //     $entry.nextAll('.'+hintClass).remove();
+            // };
+            
+            this.updateValidity = function (wrapper, currIndex) {
+                var validate = self.validate;
+                var results = validate(wrapper, currIndex);
+                self.validity = {
+                    value: (function(r){
+                        var invalidEntries = $.grep(r, 
+                            function(n ,i) {
+                                return n.isValid === false;
+                            });
+                        return invalidEntries.length === 0;
+                    })(results),
+                    detail: results,
+                };
             };
             
             this.updateSubmitButton = function(wrapper, isValid) {
@@ -210,25 +259,43 @@
             };
 
             this.watch = function(wrapper) {
-                var validate = self.validate;
-
+                // var validate = self.validate;
+                // // initialise
+                // var results = validate(wrapper, -1);
+                // self.validity = {
+                //     value: (function(r){
+                //         var invalidEntries = $.grep(r, 
+                //             function(n ,i) {
+                //                 return n.isValid === false;
+                //             });
+                //         return invalidEntries.length === 0;
+                //     })(results),
+                //     detail: results,
+                // };
+                
+                self.updateValidity(wrapper, -1);
+                console.log(self.validity);
+                // bind event with each entry
                 $.each(settings.entries, function(index, entry) {
                     var $entry = wrapper.find(entry.selector);
                     $entry.on('input', function(){
-                        var results = validate(wrapper, index);
-                        self.validity = {
-                            value: (function(r){
-                                var invalidEntries = $.grep(r, 
-                                    function(n ,i) {
-                                        return n.isValid === false;
-                                    });
-                                return invalidEntries.length === 0;
-                            })(results),
-                            detail: results,
-                        };
+                        self.updateValidity(wrapper, index);
                         self.showMessage(wrapper, self.validity, null);
                         self.updateSubmitButton(wrapper, self.validity.value);
                     });
+                    if (entry.hasOwnProperty('hint')) {
+                        $entry.on('focus', function(){
+                            console.log(entry.hint);
+                            var isValid = self.validity.detail[index].isValid;
+                            if (!isValid) {
+                                settings.hintHandler($entry, settings.hintClass, settings.errorMsgClass, entry.hint, true);
+                            }
+                        });
+                        
+                        $entry.on('blur', function(){
+                            settings.hintHandler($entry, settings.hintClass, settings.errorMsgClass, entry.hint, false);
+                        });
+                    }
                 });
             };
             
