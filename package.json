@@ -1,6 +1,6 @@
 {
   "name": "val.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple and customizable jQuery form validation plugin.",
   "main": "val.js",
   "scripts": {

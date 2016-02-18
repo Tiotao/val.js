@@ -146,11 +146,15 @@
                 var regex = self.generateRegex(entry.constraint);
                 var errorMsg = self.getErrorMessage(entry.errorMessage, content);
                 var passRegexTest = regex.test(content);
+                var isPasswordSame = true;
+                if (entry.hasOwnProperty('passwordSelector')) {
+                    isPasswordSame = $(entry.passwordSelector).val() === content;
+                }
                 if (content.length === 0 || (this.IELowerThan(10) && content === placeholder)) {
                     isValid = false;
                     isEmpty = true;
                     msg = errorMsg;
-                } else if (!passRegexTest) {
+                } else if (!passRegexTest || !isPasswordSame) {
                     isValid = false;
                     isEmpty = false;
                     msg = errorMsg;
@@ -210,24 +214,7 @@
                     }
                 });
             };
-            
-            // this.showHint = function($entry, hint) {
-            //     var hintClass = settings.hintClass;
-            //     var errorMsgClass = settings.errorMsgClass;
-            //     var hintView = "<p class='"+ hintClass +"'>" + hint + "</p>";
-            //     if ($entry.next('.'+errorMsgClass).length < 1) {
-            //         $entry.after(hintView);
-            //     } else {
-            //         $entry.next('.'+errorMsgClass).after(hintView);
-            //     }
-                
-            // };
-            
-            // this.hideHint = function($entry) {
-            //     var hintClass = settings.hintClass;
-            //     $entry.nextAll('.'+hintClass).remove();
-            // };
-            
+                        
             this.updateValidity = function (wrapper, currIndex) {
                 var validate = self.validate;
                 var results = validate(wrapper, currIndex);
@@ -261,19 +248,6 @@
             };
 
             this.watch = function(wrapper) {
-                // var validate = self.validate;
-                // // initialise
-                // var results = validate(wrapper, -1);
-                // self.validity = {
-                //     value: (function(r){
-                //         var invalidEntries = $.grep(r, 
-                //             function(n ,i) {
-                //                 return n.isValid === false;
-                //             });
-                //         return invalidEntries.length === 0;
-                //     })(results),
-                //     detail: results,
-                // };
                 self.wrapper = wrapper;
                 self.updateValidity(wrapper, -1);
                 // bind event with each entry

@@ -22,12 +22,13 @@ See `demo.html` for more information.
 String, selector of the submit button.
 eg. `#submitButtonIdName`
 ##### entries
-Array of json objects. Each object represents an input field, containing following keys: `id`, `regex`, `placeholder`, `hint` and `errorMessage`.
+Array of json objects. Each object represents an input field, containing following keys: `id`, `regex`, `placeholder`, `hint`, 'passwordSelector' and `errorMessage`.
 **selector**: String, selector of the input field.
 **constraint**: String, defines the constraint of the input field. Four constraint types are offered as default (`name`, `phone`, `country code` and `email`). Regular Expression is also accepted. eg. `/^[0-9]{0,4}$/`. 
 **placeholder**: please leave blank for now.
-**hint**: String, hint text that displays when input is focused.
-**errorMessage**: String, error message that displays when user input does not meet the constraints.
+**hint**: (Optional) String, hint text that displays when input is focused.
+**passwordSelector**: (Optional) String, selector of password field, if the current field is a confirm password field.
+**errorMessage**: (Optional) String, error message that displays when user input does not meet the constraints.
 ##### validHandler
 (Optional) Function, defines what happens when a field is valid. It should take in following parameters:
 **$entry**: jQuery Object, the input field. eg. $(selector).
